@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "danso.visualizer",
+  "name": "Audio visualizer",
+  "version": "1.0.0",
+  "author": "danso",
+  "description": "Audio bars driven by cava that move with the music",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "Visualizer.qml"
+  },
+  "barWidget": {
+    "displayName": "Audio visualizer",
+    "description": "Audio bars driven by cava",
+    "category": "Media",
+    "allowMultiple": true,
+    "defaultSection": "center"
+  }
+}

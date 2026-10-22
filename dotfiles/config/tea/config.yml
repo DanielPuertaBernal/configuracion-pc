@@ -1,0 +1,18 @@
+logins:
+    - name: uco
+      url: https://git.uco.edu.co
+      token: ba177d8ed69c7b9990c484fbe4f604a6064144fd
+      default: false
+      ssh_host: git.uco.edu.co
+      ssh_key: ""
+      insecure: false
+      ssh_certificate_principal: ""
+      ssh_agent: false
+      ssh_key_agent_pub: ""
+      version_check: true
+      user: sistemas.practica1
+      created: 1792458096
+preferences:
+    editor: false
+    flag_defaults:
+        remote: ""

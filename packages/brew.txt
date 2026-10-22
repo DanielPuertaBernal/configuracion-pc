@@ -1,0 +1,10 @@
+bat
+eza
+fd
+gentleman-programming/tap/engram
+gentleman-programming/tap/gentle-ai
+gentleman-programming/tap/gga
+ripgrep
+sd
+tea
+uv

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "danso.bugchase",
+  "name": "Bug chase",
+  "version": "1.0.0",
+  "author": "danso",
+  "description": "Rotating bar animations: Claude chasing a bug, Pac-Man, cat and mouse, rocket, dino",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "BugChase.qml"
+  },
+  "barWidget": {
+    "displayName": "Bug chase",
+    "description": "Rotates through five small chase animations",
+    "category": "Fun",
+    "allowMultiple": false,
+    "defaultSection": "left"
+  }
+}

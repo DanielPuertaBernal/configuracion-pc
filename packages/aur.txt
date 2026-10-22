@@ -1,0 +1,6 @@
+cloudflare-warp-bin
+imhex-bin
+linux-iprojection
+openconnect-sso
+oracle-sqldeveloper
+waynergy

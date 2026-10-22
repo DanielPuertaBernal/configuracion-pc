@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Connect to the UCO VPN (AnyConnect + Microsoft SSO), ensuring Cloudflare WARP is up first.
+set -euo pipefail
+
+if ! warp-cli --accept-tos status 2>/dev/null | grep -q "Connected"; then
+  echo "Connecting Cloudflare WARP..."
+  warp-cli --accept-tos connect
+  for _ in $(seq 1 15); do
+    warp-cli --accept-tos status 2>/dev/null | grep -q "Connected" && break
+    sleep 1
+  done
+fi
+echo "WARP: $(warp-cli --accept-tos status 2>/dev/null | head -1)"
+
+echo "Connecting UCO VPN (complete the Microsoft login in the popup window)..."
+echo "Press Ctrl+C to disconnect."
+# openconnect-sso 0.8.1 relies on asyncio.get_event_loop() creating a loop,
+# which Python 3.14 no longer does; set one up before calling its entry point.
+exec python3 -c '
+import asyncio, sys
+asyncio.set_event_loop(asyncio.new_event_loop())
+from openconnect_sso.cli import main
+sys.argv[0] = "openconnect-sso"
+sys.exit(main())
+' --server vpn.uco.edu.co --authgroup VPNMFA

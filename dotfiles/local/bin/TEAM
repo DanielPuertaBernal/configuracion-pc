@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+# Herdr team layout: current pane becomes the orchestrator (full left side,
+# violet background); the right side becomes a 2x2 grid of operators (orange).
+# Usage: TEAM            (run inside the pane that should be the orchestrator)
+set -euo pipefail
+
+[ "${HERDR_ENV:-}" = 1 ] || { echo "Run TEAM inside a herdr pane." >&2; exit 1; }
+
+ORCH_BG="#1e1433"   # orchestrator background (dark violet)
+OP_BG="#2e1a0c"     # operator background (dark burnt orange)
+ORCH="$HERDR_PANE_ID"
+
+split() { # <pane> <direction> -> new pane id
+  herdr pane split "$1" --direction "$2" --ratio 0.5 --cwd "$PWD" --no-focus |
+    jq -r '.result.pane.pane_id'
+}
+
+# OSC 11 sets a pane's default background; reset it with: printf '\e]111\a'
+set_bg() { # <tty> <color>
+  if [ -n "$1" ] && [ -w "$1" ]; then
+    printf '\e]11;%s\a' "$2" >"$1"
+  else
+    echo "Could not find terminal for a pane; background not changed." >&2
+  fi
+}
+
+# The orchestrator's terminal, even when stdout is captured (e.g. Claude's `!`):
+# walk up the process tree until a process with a controlling tty is found.
+self_tty() {
+  local pid=$$ tty
+  while [ "$pid" -gt 1 ]; do
+    tty=$(ps -o tty= -p "$pid" | tr -d ' ')
+    if [ -n "$tty" ] && [ "$tty" != "?" ]; then echo "/dev/$tty"; return; fi
+    pid=$(ps -o ppid= -p "$pid" | tr -d ' ')
+  done
+}
+
+# A herdr pane's terminal, via its shell process (waits for the shell to spawn).
+pane_tty() { # <pane>
+  local pid tty
+  for _ in $(seq 1 20); do
+    pid=$(herdr pane process-info --pane "$1" | jq -r '.result.process_info.shell_pid // empty')
+    if [ -n "$pid" ]; then
+      tty=$(ps -o tty= -p "$pid" | tr -d ' ')
+      if [ -n "$tty" ] && [ "$tty" != "?" ]; then echo "/dev/$tty"; return; fi
+    fi
+    sleep 0.1
+  done
+}
+
+# `TEAM --colors`: only repaint existing panes by label (colors reset when an
+# agent restarts in a pane).
+if [ "${1:-}" = "--colors" ]; then
+  herdr pane list | jq -r '.result.panes[] | select(.label != null) | "\(.pane_id) \(.label)"' |
+    while read -r id label; do
+      case "$label" in
+        orquestador) set_bg "$(pane_tty "$id")" "$ORCH_BG" ;;
+        op-*) set_bg "$(pane_tty "$id")" "$OP_BG" ;;
+      esac
+    done
+  exit 0
+fi
+
+top_left=$(split "$ORCH" right)
+bottom_left=$(split "$top_left" down)
+top_right=$(split "$top_left" right)
+bottom_right=$(split "$bottom_left" right)
+
+herdr pane rename "$ORCH" orquestador >/dev/null
+set_bg "$(self_tty)" "$ORCH_BG"
+
+n=1
+for p in "$top_left" "$top_right" "$bottom_left" "$bottom_right"; do
+  herdr pane rename "$p" "op-$n" >/dev/null
+  set_bg "$(pane_tty "$p")" "$OP_BG"
+  n=$((n + 1))
+done

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "id": "danso.edgeviz",
+  "name": "Edge audio visualizer",
+  "version": "1.0.0",
+  "author": "danso",
+  "description": "Audio-reactive bars along the screen edges, driven by cava",
+  "kinds": ["service"],
+  "entryPoints": {
+    "service": "Service.qml"
+  }
+}

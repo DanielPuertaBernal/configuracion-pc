@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "danso.spotify",
+  "name": "Spotify mini player",
+  "version": "1.0.0",
+  "author": "danso",
+  "description": "Spotify-only mini player with playback controls and app volume",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "SpotifyWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Spotify",
+    "description": "Spotify mini player",
+    "category": "Media",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}

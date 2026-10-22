@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Bring up the UCO VPN (Cisco Secure Firewall, SAML tunnel group VPNMFA).
+#
+# The gateway enforces embedded-webview SSO: it never selects the
+# single-sign-on-external-browser method, so `openconnect --external-browser`
+# cannot drive the login. NetworkManager's auth dialog links against
+# webkit2gtk and does support it, but only nm-applet registers as the secret
+# agent that launches it -- so make sure the applet is alive first.
+set -euo pipefail
+
+CONN="UCO VPN"
+
+if ! command -v nm-applet >/dev/null; then
+  echo "nm-applet is missing. Install it with: sudo pacman -S network-manager-applet" >&2
+  exit 1
+fi
+
+if ! pgrep -x nm-applet >/dev/null; then
+  echo "Starting nm-applet (secret agent for the SSO dialog)..." >&2
+  nm-applet --indicator >/dev/null 2>&1 &
+  sleep 2
+fi
+
+case "${1:-up}" in
+  up)     nmcli connection up   "$CONN" ;;
+  down)   nmcli connection down "$CONN" ;;
+  status) nmcli -t -f NAME,DEVICE,STATE connection show --active | grep -i vpn || echo "not connected" ;;
+  *)      echo "usage: uco-vpn [up|down|status]" >&2; exit 1 ;;
+esac

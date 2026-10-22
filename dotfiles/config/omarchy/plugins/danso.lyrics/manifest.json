@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "danso.lyrics",
+  "name": "Karaoke lyrics",
+  "version": "1.0.0",
+  "author": "danso",
+  "description": "Synced lyrics of the current Spotify track with karaoke-style highlighting",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "Lyrics.qml"
+  },
+  "barWidget": {
+    "displayName": "Karaoke lyrics",
+    "description": "Synced Spotify lyrics from LRCLIB",
+    "category": "Media",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}

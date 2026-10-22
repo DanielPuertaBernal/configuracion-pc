@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Control the danso.bugchase bar animation.
+# Usage: nextgif [next|previous|--fijo|--libre]
+#   next / previous  switch scene (keeps the current pin state)
+#   --fijo           pin the current scene and stop rotation
+#   --libre          release the pin and resume rotation
+case "${1:-next}" in
+  next | previous) cmd="${1:-next}" ;;
+  --fijo) cmd=pin ;;
+  --libre) cmd=unpin ;;
+  *) echo "Usage: nextgif [next|previous|--fijo|--libre]" >&2; exit 1 ;;
+esac
+dir="$HOME/.cache/danso-bugchase"
+mkdir -p "$dir"
+echo "$cmd $(date +%s%3N)" >"$dir/cmd"

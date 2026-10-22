@@ -1,0 +1,17 @@
+bt-agent.service
+omarchy-crash-watch.service
+omarchy-fcitx5.service
+omarchy-migrate-notify.service
+omarchy-recover-internal-monitor.service
+omarchy-sleep-lock.service
+openclaw-gateway.service
+pipewire-pulse.service
+voxtype.service
+waynergy-resume.service
+waynergy.service
+wireplumber.service
+xdg-user-dirs.service
+gnome-keyring-daemon.socket
+p11-kit-server.socket
+pipewire-pulse.socket
+pipewire.socket

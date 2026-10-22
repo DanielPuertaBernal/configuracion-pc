@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Remote desktop to the UCO work PC over the UCO VPN.
+# Usage: RDPUCO [username]   (default: sistemas.practica1@uco.edu.co)
+set -euo pipefail
+
+HOST="172.16.11.108"
+USER_NAME="${1:-sistemas.practica1@uco.edu.co}"
+
+if ! timeout 3 bash -c "</dev/tcp/$HOST/3389" 2>/dev/null; then
+  echo "Cannot reach $HOST:3389. Is the VPN up? Run VPNUCO first." >&2
+  exit 1
+fi
+
+# FreeRDP prompts for the password itself, so it never appears in the process list.
+# The PC uses a self-signed cert with no CN; it is only reachable inside the VPN.
+# SDL re-floats its window after mapping, so the Hyprland tile rule alone is not
+# enough; once the session window appears, tile it, move it to workspace 3 and
+# make it fullscreen.
+(
+  for _ in $(seq 1 120); do
+    addr=$(hyprctl clients -j | jq -r '.[] | select(.class=="com.freerdp.client.sdl3" and (.title|startswith("FreeRDP:")) and .floating) | .address' | head -1)
+    if [ -n "$addr" ]; then
+      sleep 1
+      hyprctl dispatch "hl.dsp.window.float({ action = \"disable\", window = \"address:$addr\" })" >/dev/null
+      hyprctl dispatch "hl.dsp.window.move({ workspace = \"3\", window = \"address:$addr\" })" >/dev/null
+      hyprctl dispatch "hl.dsp.window.fullscreen({ mode = \"fullscreen\", window = \"address:$addr\" })" >/dev/null
+      exit 0
+    fi
+    sleep 1
+  done
+) &
+
+sdl-freerdp3 \
+  /v:"$HOST" \
+  /u:"$USER_NAME" \
+  /cert:ignore \
+  /dynamic-resolution \
+  /bpp:32 \
+  /gfx:AVC444:on \
+  /network:lan \
+  +fonts \
+  -grab-keyboard \
+  +clipboard \
+  /sound \
+  /log-level:FATAL
