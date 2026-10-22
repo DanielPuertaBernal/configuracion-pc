@@ -11,7 +11,8 @@ RSYNC=(rsync -a --delete
   --exclude='*.bak*' --exclude='*.log' --exclude='*.tmp*'
   --exclude='Cache*' --exclude='cache*' --exclude='*Cache' --exclude='logs'
   --exclude='node_modules' --exclude='session-snapshots' --exclude='session.json'
-  --exclude='hosts.yml' --exclude='*credentials*' --exclude='*token*')
+  --exclude='hosts.yml' --exclude='*credentials*' --exclude='*token*'
+  --exclude='tls' --exclude='*.pem' --exclude='*.key' --exclude='synced')
 
 # ~/.config dirs worth keeping (browser profiles, nvm, Code state and app caches excluded)
 CONFIG_DIRS=(
