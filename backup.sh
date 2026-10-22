@@ -5,6 +5,7 @@ set -euo pipefail
 REPO="$(cd "$(dirname "$0")" && pwd)"
 DOT="$REPO/dotfiles"
 PKG="$REPO/packages"
+rm -rf "$DOT"
 mkdir -p "$DOT/config" "$DOT/home" "$DOT/local/bin" "$DOT/local/share/applications" "$DOT/claude" "$PKG"
 
 RSYNC=(rsync -a --delete
